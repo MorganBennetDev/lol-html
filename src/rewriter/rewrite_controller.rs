@@ -1,3 +1,4 @@
+use crate::base::HashSet;
 use super::handlers_dispatcher::{ContentHandlersDispatcher, SelectorHandlersLocator};
 use super::{HandlerTypes, RewritingError, Settings};
 use crate::base::SharedEncoding;
@@ -7,7 +8,6 @@ use crate::rewritable_units::{DocumentEnd, Token, TokenCaptureFlags};
 use crate::selectors_vm::Ast;
 use crate::selectors_vm::{AuxStartTagInfoRequest, ElementData, SelectorMatchingVm, VmError};
 use crate::transform_stream::{DispatcherError, StartTagHandlingResult, TransformController};
-use hashbrown::HashSet;
 
 #[derive(Default)]
 pub(crate) struct ElementDescriptor {

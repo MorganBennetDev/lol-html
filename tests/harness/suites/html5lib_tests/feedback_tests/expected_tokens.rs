@@ -1,5 +1,4 @@
 use super::super::TestToken;
-use hashbrown::HashMap;
 use html5ever::tendril::StrTendril;
 use html5ever::tokenizer::{
     BufferQueue, TagKind, Token, TokenSink, TokenSinkResult, Tokenizer, TokenizerOpts,

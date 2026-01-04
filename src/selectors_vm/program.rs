@@ -1,8 +1,8 @@
+use crate::base::HashSet;
 use super::attribute_matcher::AttributeMatcher;
 use super::compiler::{CompiledAttributeExpr, CompiledLocalNameExpr};
 use super::SelectorState;
 use crate::html::LocalName;
-use hashbrown::HashSet;
 use std::hash::Hash;
 use std::ops::Range;
 

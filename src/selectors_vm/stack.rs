@@ -1,12 +1,12 @@
+use crate::base::{HashMap, HashSet};
+use std::collections::hash_map::Entry;
 use super::ast::NthChild;
 use super::program::AddressRange;
 use super::SelectorState;
 use crate::html::{LocalName, Namespace, Tag};
 use crate::memory::{LimitedVec, MemoryLimitExceededError, SharedMemoryLimiter};
-// use hashbrown for raw entry, switch back to std once it stablizes there
-use hashbrown::{hash_map::RawEntryMut, HashMap, HashSet};
 use std::fmt::Debug;
-use std::hash::{BuildHasher, Hash};
+use std::hash::Hash;
 
 #[inline]
 fn is_void_element(local_name: &LocalName<'_>, enable_esi_tags: bool) -> bool {
@@ -98,28 +98,23 @@ impl CounterList {
     }
 }
 
-#[derive(Default)]
 /// A more efficient counter that only requires one owned local name to track counters across multiple stack frames
 pub(crate) struct TypedChildCounterMap(HashMap<LocalName<'static>, CounterList>);
 
-impl TypedChildCounterMap {
-    fn hash_name(&self, name: &LocalName<'_>) -> u64 {
-        self.0.hasher().hash_one(name)
+impl Default for TypedChildCounterMap {
+    fn default() -> Self {
+        Self(HashMap::default())
     }
+}
 
+impl TypedChildCounterMap {
     /// Adds a seen child to the map. The index is the level of the item
     pub fn add_child(&mut self, name: &LocalName<'_>, index: usize) {
-        let hash = self.hash_name(name);
-        let entry = self.0.raw_entry_mut().from_hash(hash, |n| name == n);
-        match entry {
-            RawEntryMut::Vacant(vacant) => {
-                vacant.insert_hashed_nocheck(
-                    hash,
-                    name.clone().into_owned(), // the hash won't change just because we've got ownership
-                    CounterList::new(index),
-                );
+        match self.0.entry(name.clone().into_owned()) {
+            Entry::Vacant(vacant) => {
+                vacant.insert(CounterList::new(index));
             }
-            RawEntryMut::Occupied(mut occupied) => {
+            Entry::Occupied(mut occupied) => {
                 let CounterList { items, current } = occupied.get_mut();
                 if current.index == index {
                     current.counter.inc();

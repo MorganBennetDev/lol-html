@@ -1,6 +1,5 @@
 use super::decoder::{decode_attr_value, decode_text, to_null_decoded};
 use super::Unescape;
-use hashbrown::HashMap;
 use lol_html::Token;
 use serde::de::{Deserialize, Deserializer, Error as DeError};
 use serde_derive::Deserialize;

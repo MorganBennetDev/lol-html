@@ -552,6 +552,7 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::base::{HashMap, HashSet};
     use super::*;
     use crate::base::SharedEncoding;
     use crate::errors::RewritingError;
@@ -563,7 +564,6 @@ mod tests {
         StartTagHandlingResult, TransformController, TransformStream, TransformStreamSettings,
     };
     use encoding_rs::{Encoding, UTF_8};
-    use hashbrown::{HashMap, HashSet};
 
     struct Expectation {
         should_bailout: bool,

@@ -329,7 +329,7 @@ mod tests {
     use crate::selectors_vm::{tests::test_with_token, TryExecResult};
     use crate::test_utils::ASCII_COMPATIBLE_ENCODINGS;
     use encoding_rs::UTF_8;
-    use hashbrown::HashSet;
+    use crate::base::HashSet;
 
     macro_rules! assert_instr_res {
         ($res:expr, $should_match:expr, $selector:expr, $input:expr, $encoding:expr) => {{
