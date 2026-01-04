@@ -21,8 +21,6 @@
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::redundant_pub_crate)]
 #![deny(rustdoc::broken_intra_doc_links)]
-#![cfg_attr(not(any(feature = "integration_test", test)), warn(missing_docs))]
-#![cfg_attr(any(feature = "integration_test", test), allow(unnameable_types))]
 
 #[macro_use]
 mod base;
@@ -37,8 +35,6 @@ mod memory;
 mod parser;
 mod rewritable_units;
 mod transform_stream;
-
-use cfg_if::cfg_if;
 
 pub use self::rewriter::{
     rewrite_str, AsciiCompatibleEncoding, CommentHandler, DoctypeHandler, DocumentContentHandlers,
@@ -102,7 +98,6 @@ pub mod html_content {
     pub use super::html::TextType;
 }
 
-#[cfg(any(test, feature = "integration_test"))]
 pub mod test_utils {
     use encoding_rs::*;
 
@@ -199,24 +194,4 @@ pub mod test_utils {
     }
 }
 
-cfg_if! {
-    if #[cfg(feature = "integration_test")] {
-        pub mod selectors_vm;
-
-        pub use self::base::SharedEncoding;
-
-        pub use self::transform_stream::{
-            StartTagHandlingResult, TransformController, TransformStream,
-            TransformStreamSettings
-        };
-
-        pub use self::rewritable_units::{
-            EndTag, Serialize, StartTag, Token, TokenCaptureFlags,
-        };
-
-        pub use self::memory::SharedMemoryLimiter;
-        pub use self::html::{LocalName, LocalNameHash, Tag, Namespace};
-    } else {
-        mod selectors_vm;
-    }
-}
+mod selectors_vm;

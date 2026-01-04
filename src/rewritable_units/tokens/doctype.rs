@@ -92,13 +92,6 @@ impl<'i> Doctype<'i> {
         self.system_id.as_ref().map(|i| i.as_string(self.encoding))
     }
 
-    #[inline]
-    #[cfg(feature = "integration_test")]
-    #[must_use]
-    pub const fn force_quirks(&self) -> bool {
-        self.force_quirks
-    }
-
     /// Removes the doctype.
     #[inline]
     pub fn remove(&mut self) {
@@ -149,7 +142,6 @@ impl Debug for Doctype<'_> {
 mod tests {
     use crate::html_content::*;
     use crate::rewritable_units::test_utils::*;
-    use crate::*;
     use encoding_rs::{Encoding, UTF_8};
 
     fn rewrite_doctype(

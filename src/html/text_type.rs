@@ -1,5 +1,3 @@
-use cfg_if::cfg_if;
-
 /// A type of parsed text.
 ///
 /// Parsing context adds certain limitations for the textual content. E.g., it's unsafe to
@@ -56,30 +54,5 @@ impl TextType {
     #[must_use]
     pub fn allows_html_entities(self) -> bool {
         self == Self::Data || self == Self::RCData
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "integration_test")] {
-        impl TextType {
-            #[must_use] pub fn should_replace_unsafe_null_in_text(self) -> bool {
-                self != Self::Data && self != Self::CDataSection
-            }
-        }
-
-        #[allow(clippy::fallible_impl_from)]
-        impl<'s> From<&'s str> for TextType {
-            fn from(text_type: &'s str) -> Self {
-                match text_type {
-                    "Data state" => Self::Data,
-                    "PLAINTEXT state" => Self::PlainText,
-                    "RCDATA state" => Self::RCData,
-                    "RAWTEXT state" => Self::RawText,
-                    "Script data state" => Self::ScriptData,
-                    "CDATA section state" => Self::CDataSection,
-                    _ => panic!("Unknown text type"),
-                }
-            }
-        }
     }
 }

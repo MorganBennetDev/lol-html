@@ -15,10 +15,6 @@ test_case = { path = "./test_case" }
 git = "https://github.com/rust-fuzz/libfuzzer-sys.git"
 
 [[bin]]
-name = "fuzz_c_api"
-path = "fuzz_targets/fuzz_c_api.rs"
-
-[[bin]]
 name = "fuzz_rewriter"
 path = "fuzz_targets/fuzz_rewriter.rs"
 

@@ -17,7 +17,6 @@ use self::tag_scanner::TagScanner;
 pub use self::tree_builder_simulator::ParsingAmbiguityError;
 use self::tree_builder_simulator::{TreeBuilderFeedback, TreeBuilderSimulator};
 use crate::rewriter::RewritingError;
-use cfg_if::cfg_if;
 
 // NOTE: tag scanner can implicitly force parser to switch to
 // the lexer mode if it fails to get tree builder feedback. It's up
@@ -119,32 +118,5 @@ impl<S: ParserOutputSink> Parser<S> {
 
     pub fn get_dispatcher(&mut self) -> &mut S {
         &mut self.context.output_sink
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "integration_test")] {
-        use crate::html::{LocalNameHash, TextType};
-
-        #[allow(private_bounds)]
-        impl<S: ParserOutputSink> Parser<S> {
-            pub fn switch_text_type(&mut self, text_type: TextType) {
-                match self.current_directive {
-                    ParserDirective::WherePossibleScanForTagsOnly => {
-                        self.tag_scanner.switch_text_type(text_type);
-                    }
-                    ParserDirective::Lex => self.lexer.switch_text_type(text_type),
-                }
-            }
-
-            pub fn set_last_start_tag_name_hash(&mut self, name_hash: LocalNameHash) {
-                match self.current_directive {
-                    ParserDirective::WherePossibleScanForTagsOnly => {
-                        self.tag_scanner.set_last_start_tag_name_hash(name_hash);
-                    }
-                    ParserDirective::Lex => self.lexer.set_last_start_tag_name_hash(name_hash),
-                }
-            }
-        }
     }
 }

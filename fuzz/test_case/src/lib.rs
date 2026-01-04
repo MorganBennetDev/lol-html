@@ -2,19 +2,12 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-// make it link
-use lolhtml as _;
-
-use libc::{c_char, c_void, size_t};
 use rand::Rng;
-use std::ffi::{CStr, CString};
 
 use encoding_rs::*;
 use lol_html::html_content::ContentType;
 use lol_html::{comments, doc_comments, doc_text, element, streaming, text};
 use lol_html::{HtmlRewriter, MemorySettings, Settings};
-
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 static ASCII_COMPATIBLE_ENCODINGS: [&Encoding; 36] = [
     BIG5,
@@ -74,18 +67,12 @@ static SUPPORTED_SELECTORS: [&str; 16] = [
     "p > a",
 ];
 
-extern "C" fn empty_handler(_foo: *const c_char, _size: size_t, _boo: *mut c_void) {}
-
 pub fn run_rewriter(data: &[u8]) {
     // fuzzing with randomly picked selector and encoding
     // works much faster (50 times) that iterating over all
     // selectors/encoding per single run. It's recommended
     // to make iterations as fast as possible per fuzzing docs.
     run_rewriter_iter(data, get_random_selector(), get_random_encoding());
-}
-
-pub fn run_c_api_rewriter(data: &[u8]) {
-    run_c_api_rewriter_iter(data, get_random_encoding().name());
 }
 
 fn get_random_encoding() -> &'static Encoding {
@@ -184,31 +171,3 @@ fn run_rewriter_iter(data: &[u8], selector: &str, encoding: &'static Encoding) {
     rewriter.end().unwrap();
 }
 
-fn run_c_api_rewriter_iter(data: &[u8], encoding: &str) {
-    let c_encoding = CString::new(encoding).expect("CString::new failed.");
-
-    unsafe {
-        let builder = lol_html_rewriter_builder_new();
-        let mut output_data = ();
-        let output_data_ptr: *mut c_void = std::ptr::from_mut(&mut output_data).cast::<c_void>();
-
-        let rewriter = lol_html_rewriter_build(
-            builder,
-            c_encoding.as_ptr(),
-            encoding.len(),
-            lol_html_memory_settings_t {
-                preallocated_parsing_buffer_size: 0,
-                max_allowed_memory_usage: usize::MAX,
-            },
-            Some(empty_handler),
-            output_data_ptr,
-            false,
-        );
-
-        let cstr = CStr::from_bytes_with_nul_unchecked(data);
-
-        lol_html_rewriter_write(rewriter, cstr.as_ptr(), data.len());
-        lol_html_rewriter_builder_free(builder);
-        lol_html_rewriter_free(rewriter);
-    }
-}
