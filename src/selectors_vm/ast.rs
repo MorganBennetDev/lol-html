@@ -151,7 +151,7 @@ impl From<&Component<SelectorImplDescriptor>> for Condition {
             // the parsed selector as we should bail earlier in the parser.
             // Otherwise, we'll have AST in invalid state in case of error.
             _bad_selector => unreachable!(
-                "Unsupported selector components should be filtered out by the parser: {bad_selector:?}"
+                "Unsupported selector components should be filtered out by the parser: {_bad_selector:?}"
             ),
         }
     }
